@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Tracking Simulation</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        .controls {
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .info-panel {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="info-panel">
+        <p>Current Time: <span id="currentTime"></span></p>
+        <p>Position: <span id="currentPosition"></span></p>
+    </div>
+    <div class="controls">
+        <button onclick="startSimulation()">Start Simulation</button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('map').setView([17.385044, 78.486671], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Car icon
+        const carIcon = L.icon({
+            iconUrl: 'https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
+        });
+
+        // Route data
+        const routeData = [
+            { coordinates: [17.385044, 78.486671], timestamp: getCurrentIndianTime() },
+            { coordinates: [17.385045, 78.486672], timestamp: new Date(new Date(getCurrentIndianTime()).getTime() + 5000).toISOString() }
+        ];
+
+        // Get current Indian time
+        function getCurrentIndianTime() {
+            const now = new Date();
+            const indianTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+            return indianTime.toISOString();
+        }
+
+        // Create route line
+        const routeLine = L.polyline(routeData.map(point => point.coordinates), {color: 'red'}).addTo(map);
+
+        // Create car marker
+        const carMarker = L.marker(routeData[0].coordinates, {icon: carIcon}).addTo(map);
+
+        let currentIndex = 0;
+        let simulationInterval;
+
+        function startSimulation() {
+            if (simulationInterval) {
+                clearInterval(simulationInterval);
+            }
+            
+            currentIndex = 0;
+            updatePosition();
+            
+            simulationInterval = setInterval(() => {
+                if (currentIndex < routeData.length - 1) {
+                    currentIndex++;
+                    updatePosition();
+                } else {
+                    clearInterval(simulationInterval);
+                }
+            }, 2000);
+        }
+
+        function updatePosition() {
+            const currentPoint = routeData[currentIndex];
+            carMarker.setLatLng(currentPoint.coordinates);
+            
+            // Update info panel
+            document.getElementById('currentTime').textContent = currentPoint.timestamp;
+            document.getElementById('currentPosition').textContent = 
+                `${currentPoint.coordinates[0].toFixed(6)}, ${currentPoint.coordinates[1].toFixed(6)}`;
+            
+            // Center map on current position
+            map.setView(currentPoint.coordinates);
+        }
+
+        // Initialize display
+        updatePosition();
+    </script>
+</body>
+</html> 
