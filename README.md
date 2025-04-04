@@ -19,36 +19,6 @@ This project demonstrates a vehicle's movement on a map using React and Leaflet.
 - Node.js (>= 14.x)
 - npm (>= 6.x) or yarn (>= 1.x)
 
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/KMONIKA26/React-leaflet-tracking-vehicle-simulation
-   cd react-leaflet-vehicle-simulation
-   ```
-
-2. Install the dependencies:
-
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. Start the development server:
-
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
-
-4. Open the application in your browser:
-
-   ```
-   http://localhost:3000
-   ```
 
 ## Usage
 
